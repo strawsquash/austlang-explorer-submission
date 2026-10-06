@@ -6,7 +6,6 @@ import pandas as pd
 import streamlit as st
 
 from explorer import compare_regions, load_records, nearest, region_counts, search
-from test_runner import run_project_tests
 from ui_style import apply_style, hero, note
 
 
@@ -32,7 +31,7 @@ counts = region_counts(data)
 regions = ["All", *sorted(counts)]
 
 hero()
-view = st.segmented_control("Explore", ["Discover", "Map", "Insights", "Compare", "Run tests", "About"], default="Discover", label_visibility="collapsed")
+view = st.segmented_control("Explore", ["Discover", "Map", "Insights", "Compare", "About"], default="Discover", label_visibility="collapsed")
 note()
 
 if view == "Discover":
@@ -123,21 +122,6 @@ elif view == "Compare":
         c.metric("Tagged to both", comparison["both"])
         st.bar_chart(pd.DataFrame({"Record group": [f"{first} only", "Both", f"{second} only"], "Records": [comparison["first_only"], comparison["both"], comparison["second_only"]]}).set_index("Record group"), color="#A35232")
         st.caption("The comparison counts distinct AustLang codes within each group. It reflects the source's broad region metadata.")
-
-elif view == "Run tests":
-    st.header("Run the automated tests")
-    st.markdown('<p class="section-lead">Check the app’s data loading, search, region calculations, distance algorithm and error handling.</p>', unsafe_allow_html=True)
-    st.write("This button runs the same checked-in pytest suite used in VS Code. It does not edit the dataset or run text entered by visitors.")
-    if st.button("Run all tests", type="primary", icon="🧪"):
-        with st.spinner("Running tests…"):
-            passed, output = run_project_tests()
-        if passed:
-            st.success("All automated tests passed.")
-        else:
-            st.error("One or more tests failed. Review the output below.")
-        st.code(output, language="text")
-    st.subheader("Try the main workflows too")
-    st.markdown("1. Search a name and an AustLang code in **Discover**.\n2. Try a search with no matches.\n3. Filter the **Map** and compare two regions.\n4. Open an AIATSIS source link and check it matches the app record.")
 
 else:
     st.header("About the data")

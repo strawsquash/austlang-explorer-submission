@@ -1,6 +1,6 @@
 # AustLang Explorer
 
-An interactive Python app for exploring published AIATSIS AustLang metadata. Built for the CITS1501 Culture, Country and Language project. It has six views: Discover, Map, Insights, Compare, Run tests, and About.
+An interactive Python app for exploring published AIATSIS AustLang metadata. Built for the CITS1501 Culture, Country and Language project. It has five views: Discover, Map, Insights, Compare, and About.
 
 ## Run in VS Code
 
@@ -14,7 +14,7 @@ Streamlit prints a local URL, usually `http://localhost:8501`.
 
 ## Test
 
-Run `python -m pytest -q`. You can also open **Run tests** in the website and press **Run all tests**; it runs the same fixed pytest suite and displays its output. The tests cover the dataset threshold, search and ranking, region counts, geographic distance, invalid input, and boundary conditions.
+Run `python -m pytest -q` in the VS Code terminal. The tests cover the dataset threshold, search and ranking, region counts, geographic distance, invalid input, and boundary conditions. These are development checks, separate from the app's user-facing features.
 
 ## Data and attribution
 
@@ -28,7 +28,6 @@ Approximate points do not describe the boundaries of Country. Counts show record
 - `explorer.py`: CSV loading, search ranking, region analysis, and distance algorithm.
 - `data/austlang.csv`: bundled data snapshot.
 - `tests/`: automated tests.
-- `test_runner.py`: fixed, time-limited pytest runner for the website's test view.
 - `ui_style.py`: interface styling and common presentation elements.
 - `REPORT_NOTES.md`: working notes for the eventual report.
 - `AI-LOG.md`: significant AI use.
