@@ -5,13 +5,13 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-from explorer import load_records, nearest, region_counts, search
+from explorer import compare_regions, load_records, nearest, region_counts, search
 
 
 DATA = Path(__file__).parent / "data" / "austlang.csv"
 SOURCE = "https://data.gov.au/data/dataset/austlang-dataset-001"
 
-st.set_page_config(page_title="AustLang Explorer", page_icon="🗺️", layout="wide")
+st.set_page_config(page_title="AustLang Explorer", page_icon="🗺️", layout="wide", initial_sidebar_state="collapsed")
 
 
 @st.cache_data
@@ -29,14 +29,13 @@ counts = region_counts(data)
 regions = ["All", *sorted(counts)]
 
 st.title("AustLang Explorer")
-st.caption("Explore published language metadata from the Australian Institute of Aboriginal and Torres Strait Islander Studies (AIATSIS).")
+st.caption("A guide to published language records from the Australian Institute of Aboriginal and Torres Strait Islander Studies (AIATSIS).")
 st.info(
     "Language names, spellings, and locations are drawn from a published dataset. "
     "Locations are approximate points, not boundaries of Country. This app does not teach language or make cultural claims."
 )
 
-view = st.sidebar.radio("Explore", ["Search languages", "Map and nearby", "Patterns in the data", "About the data"])
-st.sidebar.markdown(f"**{len(data):,} records** in the bundled data snapshot")
+view = st.selectbox("Choose a view", ["Search languages", "Map and nearby", "Patterns in the data", "Compare regions", "About the data"])
 
 if view == "Search languages":
     st.header("Search languages")
@@ -48,15 +47,20 @@ if view == "Search languages":
     if not matches:
         st.warning("No records matched. Try a different spelling or remove the region filter.")
     else:
+        page_size = 25
+        pages = (len(matches) + page_size - 1) // page_size
+        page = st.number_input("Results page", min_value=1, max_value=pages, value=1, step=1)
+        page_records = matches[(page - 1) * page_size : page * page_size]
+        st.caption(f"Showing {(page - 1) * page_size + 1}–{min(page * page_size, len(matches))} of {len(matches):,}")
         display = pd.DataFrame({
-            "AustLang code": [item["code"] for item in matches],
-            "Name": [item["name"] for item in matches],
-            "Region tags": [", ".join(item["regions"]) or "Not listed" for item in matches],
-            "Alternate names": [item["alternate_names"] for item in matches],
+            "Code": [item["code"] for item in page_records],
+            "Name": [item["name"] for item in page_records],
+            "Region tags": [", ".join(item["regions"]) or "Not listed" for item in page_records],
+            "Alternate names": [item["alternate_names"] for item in page_records],
         })
-        st.dataframe(display, width="stretch", hide_index=True, height=430)
-        selected_code = st.selectbox("Open a source record", [item["code"] for item in matches], format_func=lambda code: next(f"{r['name']} ({code})" for r in matches if r["code"] == code))
-        selected = next(item for item in matches if item["code"] == selected_code)
+        st.dataframe(display, width="stretch", hide_index=True, height=400)
+        selected_code = st.selectbox("Open a record on this page", [item["code"] for item in page_records], format_func=lambda code: next(f"{r['name']} ({code})" for r in page_records if r["code"] == code))
+        selected = next(item for item in page_records if item["code"] == selected_code)
         st.subheader(selected["name"])
         st.write(f"**AustLang code:** {selected['code']}")
         st.write(f"**Region tags:** {', '.join(selected['regions']) or 'Not listed'}")
@@ -102,6 +106,24 @@ elif view == "Patterns in the data":
     st.bar_chart(chart, horizontal=True, color="#A35232")
     st.subheader("Completeness")
     st.dataframe(pd.DataFrame({"Field": ["Region tag", "Usable coordinates", "Alternate names"], "Records": [with_region, with_location, with_aliases], "Missing": [len(data)-with_region, len(data)-with_location, len(data)-with_aliases]}), hide_index=True, width="stretch")
+
+elif view == "Compare regions":
+    st.header("Compare region tags")
+    st.write("Compare how many records in this dataset carry each tag. A record can carry both tags. These numbers do not measure language use or Country boundaries.")
+    available = [region for region in regions if region != "All"]
+    first_col, second_col = st.columns(2)
+    first = first_col.selectbox("First region", available, index=available.index("WA") if "WA" in available else 0)
+    second = second_col.selectbox("Second region", available, index=available.index("NT") if "NT" in available else min(1, len(available) - 1))
+    if first == second:
+        st.warning("Choose two different regions to compare.")
+    else:
+        comparison = compare_regions(data, first, second)
+        a, b, c = st.columns(3)
+        a.metric(f"{first} records", comparison["first_total"])
+        b.metric(f"{second} records", comparison["second_total"])
+        c.metric("Tagged to both", comparison["both"])
+        st.bar_chart(pd.DataFrame({"Record group": [f"{first} only", "Both", f"{second} only"], "Records": [comparison["first_only"], comparison["both"], comparison["second_only"]]}).set_index("Record group"), color="#A35232")
+        st.caption("The comparison counts distinct AustLang codes within each group. It reflects the source's broad region metadata.")
 
 else:
     st.header("About the data")

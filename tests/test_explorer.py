@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from explorer import haversine_km, load_records, nearest, region_counts, search
+from explorer import compare_regions, haversine_km, load_records, nearest, region_counts, search
 
 
 DATA = Path(__file__).parents[1] / "data" / "austlang.csv"
@@ -43,6 +43,22 @@ def test_region_counts_multi_tag():
     assert region_counts(sample) == {"WA": 2, "SA": 1}
 
 
+def test_compare_regions_counts_overlap_once():
+    sample = [
+        {"code": "A1", "regions": ("WA", "SA")},
+        {"code": "A2", "regions": ("WA",)},
+        {"code": "A3", "regions": ("SA",)},
+    ]
+    assert compare_regions(sample, "WA", "SA") == {
+        "first_total": 2, "second_total": 2, "both": 1, "first_only": 1, "second_only": 1
+    }
+
+
+def test_compare_regions_rejects_same_region(records):
+    with pytest.raises(ValueError):
+        compare_regions(records, "WA", "WA")
+
+
 def test_distance_same_point_is_zero():
     assert haversine_km(-31.95, 115.86, -31.95, 115.86) == 0
 
@@ -56,6 +72,14 @@ def test_nearest_sorts_by_distance(records):
 def test_nearest_rejects_out_of_range(records):
     with pytest.raises(ValueError):
         nearest(records, 0, 0)
+
+
+def test_nearest_excludes_missing_coordinates():
+    sample = [
+        {"code": "A1", "name": "With point", "latitude": -31.9, "longitude": 115.8},
+        {"code": "A2", "name": "Without point", "latitude": None, "longitude": None},
+    ]
+    assert [r["code"] for r, _ in nearest(sample, -31.95, 115.86)] == ["A1"]
 
 
 def test_invalid_coordinates_are_missing(records):

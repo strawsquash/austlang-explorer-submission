@@ -13,7 +13,7 @@ These are evidence and decisions for a later report, **not** the final report. K
 
 - Intended user: a student or general visitor who wants to locate AIATSIS AustLang records by language name, variant spelling, code, or broad state/territory tag.
 - Main tasks: find a source record, inspect approximate published points, and understand patterns and gaps in dataset coverage.
-- Four views: Search languages; Map and nearby; Patterns in the data; About the data.
+- Five views: Search languages; Map and nearby; Patterns in the data; Compare regions; About the data.
 
 ## Data provenance and preparation
 
@@ -32,6 +32,7 @@ These are evidence and decisions for a later report, **not** the final report. K
 - Search scores exact code and name-prefix matches above incidental or alternate-name matches; filters by broad region tag. Ties sort by name and code.
 - Nearby feature computes Haversine great-circle distance to every record with usable coordinates, sorts, and returns ten. It is an approximate point comparison, not a claim about Country.
 - Region analysis counts each record once per listed region; totals may exceed 1,209 when records have multiple tags.
+- Region comparison uses sets of AustLang codes, separating records tagged only to each selected region from those tagged to both. These are dataset metadata comparisons, not counts of languages spoken or cultural boundaries.
 - Missing coordinates are excluded from map and distance calculation. Dataset threshold and required columns are validated.
 
 ## Analysis and visualisation
@@ -39,13 +40,14 @@ These are evidence and decisions for a later report, **not** the final report. K
 - Bar chart: number of source records tagged to each state/territory. Interpret as dataset coverage only.
 - Completeness table: region tags, usable coordinates, and alternate names, including missing counts.
 - Map: approximate source points with a region filter.
+- Comparison chart: records unique to either of two region tags and records tagged to both.
 - Capture actual figures from the app after testing and add one or two carefully limited observations.
 
 ## Interface and reliability
 
 - Sidebar navigation; labels and feedback for no search matches; source-record links; consistent theme.
-- Automated tests in `tests/test_explorer.py` (12 tests). On 2026-10-06, `python -m pytest -q` reported **12 passed**.
-- Streamlit `AppTest` loaded all four views on 2026-10-06 with zero exceptions.
+- Automated tests in `tests/test_explorer.py` (15 tests). On 2026-10-06, `python -m pytest -q` reported **15 passed**.
+- Streamlit `AppTest` loaded all five views on 2026-10-06 with zero exceptions. The local app was also opened in a browser after restarting the development server and the updated search view rendered successfully.
 - Manual workflow checks still needed: search by name/code, filter, source link, map, invalid/empty input, mobile width.
 
 ## Security and privacy

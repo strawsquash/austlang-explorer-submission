@@ -81,6 +81,21 @@ def region_counts(records: list[dict]) -> dict[str, int]:
     return dict(sorted(counts.items(), key=lambda item: (-item[1], item[0])))
 
 
+def compare_regions(records: list[dict], first: str, second: str) -> dict[str, int]:
+    """Compare source record tags for two regions without treating tags as boundaries."""
+    if not first or not second or first == second:
+        raise ValueError("Choose two different regions")
+    first_codes = {r["code"] for r in records if first in r["regions"]}
+    second_codes = {r["code"] for r in records if second in r["regions"]}
+    return {
+        "first_total": len(first_codes),
+        "second_total": len(second_codes),
+        "both": len(first_codes & second_codes),
+        "first_only": len(first_codes - second_codes),
+        "second_only": len(second_codes - first_codes),
+    }
+
+
 def haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
     radius = 6371.0088
     a1, a2 = math.radians(lat1), math.radians(lat2)
