@@ -13,7 +13,7 @@ These are evidence and decisions for a later report, **not** the final report. K
 
 - Intended user: a student or general visitor who wants to locate AIATSIS AustLang records by language name, variant spelling, code, or broad state/territory tag.
 - Main tasks: find a source record, inspect approximate published points, and understand patterns and gaps in dataset coverage.
-- Five views: Search languages; Map and nearby; Patterns in the data; Compare regions; About the data.
+- Six views: Discover; Map; Insights; Compare; Run tests; About.
 
 ## Data provenance and preparation
 
@@ -48,12 +48,14 @@ These are evidence and decisions for a later report, **not** the final report. K
 - Sidebar navigation; labels and feedback for no search matches; source-record links; consistent theme.
 - Automated tests in `tests/test_explorer.py` (15 tests). On 2026-10-06, `python -m pytest -q` reported **15 passed**.
 - Streamlit `AppTest` loaded all five views on 2026-10-06 with zero exceptions. The local app was also opened in a browser after restarting the development server and the updated search view rendered successfully.
+- On 2026-10-06, the interface was redesigned with a compact hero, top navigation, clearer sections, and mobile-width styling. `AppTest` loaded all six views with zero exceptions. The Run tests button was clicked in the browser and visibly reported **15 passed**.
 - Manual workflow checks still needed: search by name/code, filter, source link, map, invalid/empty input, mobile width.
 
 ## Security and privacy
 
 - No login, user accounts, uploads, personal data collection, or API keys.
 - Search input is treated as text, not executed as code or SQL. Latitude and longitude constrained in UI and validated in algorithm.
+- The website test runner executes a fixed checked-in pytest command with a 20-second timeout and no user-supplied command arguments.
 - Bundled read-only CSV avoids a runtime API dependency.
 
 ## Deployment and limitations

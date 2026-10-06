@@ -6,12 +6,15 @@ import pandas as pd
 import streamlit as st
 
 from explorer import compare_regions, load_records, nearest, region_counts, search
+from test_runner import run_project_tests
+from ui_style import apply_style, hero, note
 
 
 DATA = Path(__file__).parent / "data" / "austlang.csv"
 SOURCE = "https://data.gov.au/data/dataset/austlang-dataset-001"
 
 st.set_page_config(page_title="AustLang Explorer", page_icon="🗺️", layout="wide", initial_sidebar_state="collapsed")
+apply_style()
 
 
 @st.cache_data
@@ -28,22 +31,18 @@ except (OSError, ValueError) as exc:
 counts = region_counts(data)
 regions = ["All", *sorted(counts)]
 
-st.title("AustLang Explorer")
-st.caption("A guide to published language records from the Australian Institute of Aboriginal and Torres Strait Islander Studies (AIATSIS).")
-st.info(
-    "Language names, spellings, and locations are drawn from a published dataset. "
-    "Locations are approximate points, not boundaries of Country. This app does not teach language or make cultural claims."
-)
+hero()
+view = st.segmented_control("Explore", ["Discover", "Map", "Insights", "Compare", "Run tests", "About"], default="Discover", label_visibility="collapsed")
+note()
 
-view = st.selectbox("Choose a view", ["Search languages", "Map and nearby", "Patterns in the data", "Compare regions", "About the data"])
-
-if view == "Search languages":
-    st.header("Search languages")
+if view == "Discover":
+    st.header("Discover a record")
+    st.markdown('<p class="section-lead">Search a name, alternate spelling or AustLang code, then open the original record.</p>', unsafe_allow_html=True)
     left, right = st.columns([2, 1])
     query = left.text_input("Language name, alternate spelling, or AustLang code", placeholder="For example: Noongar or A1")
     region = right.selectbox("State or territory tag", regions)
     matches = search(data, query, region, limit=len(data))
-    st.write(f"{len(matches):,} matching records")
+    st.markdown(f"**{len(matches):,} matching records**")
     if not matches:
         st.warning("No records matched. Try a different spelling or remove the region filter.")
     else:
@@ -68,9 +67,9 @@ if view == "Search languages":
         if selected["source_url"]:
             st.link_button("View AIATSIS source record", selected["source_url"])
 
-elif view == "Map and nearby":
+elif view == "Map":
     st.header("Approximate location map")
-    st.write("Points are published approximate locations. Missing or invalid coordinates are omitted from the map.")
+    st.markdown('<p class="section-lead">Explore published approximate points. Records without valid coordinates are omitted.</p>', unsafe_allow_html=True)
     mapped = [r for r in data if r["latitude"] is not None]
     map_region = st.selectbox("Show region", regions)
     mapped = [r for r in mapped if map_region == "All" or map_region in r["regions"]]
@@ -90,9 +89,9 @@ elif view == "Map and nearby":
         "AIATSIS record": [r["source_url"] for r, _ in nearby],
     }), width="stretch", hide_index=True)
 
-elif view == "Patterns in the data":
+elif view == "Insights":
     st.header("Patterns in the dataset")
-    st.write("These charts describe the **dataset's coverage**, not the number of living languages or speakers in a region.")
+    st.markdown('<p class="section-lead">See where the dataset has region tags, coordinates and alternate names.</p>', unsafe_allow_html=True)
     with_location = sum(r["latitude"] is not None for r in data)
     with_aliases = sum(bool(r["alternate_names"]) for r in data)
     with_region = sum(bool(r["regions"]) for r in data)
@@ -107,9 +106,9 @@ elif view == "Patterns in the data":
     st.subheader("Completeness")
     st.dataframe(pd.DataFrame({"Field": ["Region tag", "Usable coordinates", "Alternate names"], "Records": [with_region, with_location, with_aliases], "Missing": [len(data)-with_region, len(data)-with_location, len(data)-with_aliases]}), hide_index=True, width="stretch")
 
-elif view == "Compare regions":
+elif view == "Compare":
     st.header("Compare region tags")
-    st.write("Compare how many records in this dataset carry each tag. A record can carry both tags. These numbers do not measure language use or Country boundaries.")
+    st.markdown('<p class="section-lead">Compare how many records carry two broad region tags, including records tagged to both.</p>', unsafe_allow_html=True)
     available = [region for region in regions if region != "All"]
     first_col, second_col = st.columns(2)
     first = first_col.selectbox("First region", available, index=available.index("WA") if "WA" in available else 0)
@@ -124,6 +123,21 @@ elif view == "Compare regions":
         c.metric("Tagged to both", comparison["both"])
         st.bar_chart(pd.DataFrame({"Record group": [f"{first} only", "Both", f"{second} only"], "Records": [comparison["first_only"], comparison["both"], comparison["second_only"]]}).set_index("Record group"), color="#A35232")
         st.caption("The comparison counts distinct AustLang codes within each group. It reflects the source's broad region metadata.")
+
+elif view == "Run tests":
+    st.header("Run the automated tests")
+    st.markdown('<p class="section-lead">Check the app’s data loading, search, region calculations, distance algorithm and error handling.</p>', unsafe_allow_html=True)
+    st.write("This button runs the same checked-in pytest suite used in VS Code. It does not edit the dataset or run text entered by visitors.")
+    if st.button("Run all tests", type="primary", icon="🧪"):
+        with st.spinner("Running tests…"):
+            passed, output = run_project_tests()
+        if passed:
+            st.success("All automated tests passed.")
+        else:
+            st.error("One or more tests failed. Review the output below.")
+        st.code(output, language="text")
+    st.subheader("Try the main workflows too")
+    st.markdown("1. Search a name and an AustLang code in **Discover**.\n2. Try a search with no matches.\n3. Filter the **Map** and compare two regions.\n4. Open an AIATSIS source link and check it matches the app record.")
 
 else:
     st.header("About the data")
