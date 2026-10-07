@@ -12,9 +12,13 @@ An interactive Python app for exploring published AIATSIS AustLang metadata. Bui
 
 Streamlit prints a local URL, usually `http://localhost:8501`.
 
+After the first setup, VS Code also provides **Terminal → Run Task → Run AustLang Explorer**. Generated environment and cache folders are hidden from the Explorer panel.
+
 ## Test
 
 Run `python -m pytest -q` in the VS Code terminal. The tests cover the dataset threshold, search and ranking, region counts, geographic distance, invalid input, and boundary conditions. These are development checks, separate from the app's user-facing features.
+
+You can also choose **Terminal → Run Task → Run automated tests**.
 
 ## Data and attribution
 
