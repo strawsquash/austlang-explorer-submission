@@ -13,7 +13,7 @@ These are evidence and decisions for a later report, **not** the final report. K
 
 - Intended user: a student or general visitor who wants to locate AIATSIS AustLang records by language name, variant spelling, code, or broad state/territory tag.
 - Main tasks: find a source record, inspect approximate published points, and understand patterns and gaps in dataset coverage.
-- Five views: Discover; Map; Insights; Compare; About.
+- Five views with task-focused labels: Search Languages; Language Map; Dataset Statistics; Compare Regions; About the Data.
 
 ## Data provenance and preparation
 
@@ -40,6 +40,7 @@ These are evidence and decisions for a later report, **not** the final report. K
 - Bar chart: number of source records tagged to each state/territory. Interpret as dataset coverage only.
 - Completeness table: region tags, usable coordinates, and alternate names, including missing counts.
 - Map: approximate source points with a region filter.
+- Map markers show the record name, AustLang code, and broad region tags on hover.
 - Comparison chart: records unique to either of two region tags and records tagged to both.
 - Capture actual figures from the app after testing and add one or two carefully limited observations.
 
@@ -49,6 +50,7 @@ These are evidence and decisions for a later report, **not** the final report. K
 - Automated tests in `tests/test_explorer.py` (15 tests). On 2026-10-06, `python -m pytest -q` reported **15 passed**.
 - Streamlit `AppTest` loaded all five views on 2026-10-06 with zero exceptions. The local app was also opened in a browser after restarting the development server and the updated search view rendered successfully.
 - On 2026-10-06, the interface was redesigned with a compact hero, top navigation, clearer sections, and mobile-width styling. A website test button was briefly added and verified, then removed because automated tests belong in the development workflow. The pytest suite remains in `tests/`.
+- On 2026-10-07, navigation labels were rewritten around user tasks, a short start guide and clearer record card were added, and map markers gained named hover details.
 - Manual workflow checks still needed: search by name/code, filter, source link, map, invalid/empty input, mobile width.
 
 ## Security and privacy

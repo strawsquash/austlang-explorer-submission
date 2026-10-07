@@ -25,6 +25,7 @@ def apply_style() -> None:
         .eyebrow { color: #c8deca; font-size: .75rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
         .note { background: #ecf1e8; border-left: 4px solid #8f9e7b; border-radius: 0 12px 12px 0; padding: .75rem 1rem; color: #344940; margin: .4rem 0 1.25rem; }
         .section-lead { color: #53665e; margin-top: -.5rem; margin-bottom: 1.1rem; }
+        .quick-start { background: #fffdf8; border: 1px solid #dedfd3; border-radius: 14px; padding: .9rem 1rem; margin: 0 0 1.1rem; color: #344940; }
         @media (max-width: 640px) {
           .block-container { padding: .8rem .8rem 3rem; }
           .hero { padding: 1.35rem; border-radius: 17px; }

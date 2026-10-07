@@ -1,6 +1,6 @@
 # AustLang Explorer
 
-An interactive Python app for exploring published AIATSIS AustLang metadata. Built for the CITS1501 Culture, Country and Language project. It has five views: Discover, Map, Insights, Compare, and About.
+An interactive Python app for exploring published AIATSIS AustLang metadata. Built for the CITS1501 Culture, Country and Language project. It has five views: Search Languages, Language Map, Dataset Statistics, Compare Regions, and About the Data.
 
 ## Run in VS Code
 
@@ -28,7 +28,7 @@ Approximate points do not describe the boundaries of Country. Counts show record
 
 ## Project structure
 
-- `app.py`: Streamlit interface and charts.
+- `app.py`: Streamlit interface, charts, and interactive map.
 - `explorer.py`: CSV loading, search ranking, region analysis, and distance algorithm.
 - `data/austlang.csv`: bundled data snapshot.
 - `tests/`: automated tests.

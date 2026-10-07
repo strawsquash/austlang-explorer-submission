@@ -3,6 +3,7 @@
 from pathlib import Path
 
 import pandas as pd
+import pydeck as pdk
 import streamlit as st
 
 from explorer import compare_regions, load_records, nearest, region_counts, search
@@ -31,12 +32,22 @@ counts = region_counts(data)
 regions = ["All", *sorted(counts)]
 
 hero()
-view = st.segmented_control("Explore", ["Discover", "Map", "Insights", "Compare", "About"], default="Discover", label_visibility="collapsed")
+view = st.segmented_control(
+    "Explore",
+    ["Search Languages", "Language Map", "Dataset Statistics", "Compare Regions", "About the Data"],
+    default="Search Languages",
+    label_visibility="collapsed",
+)
 note()
 
-if view == "Discover":
-    st.header("Discover a record")
-    st.markdown('<p class="section-lead">Search a name, alternate spelling or AustLang code, then open the original record.</p>', unsafe_allow_html=True)
+if view == "Search Languages":
+    st.header("Search language records")
+    st.markdown('<p class="section-lead">Find a published AustLang record and follow it back to the AIATSIS collection.</p>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="quick-start"><strong>Start here:</strong> Enter a language name, alternate spelling, or code. '
+        'You can narrow the results using a state or territory tag.</div>',
+        unsafe_allow_html=True,
+    )
     left, right = st.columns([2, 1])
     query = left.text_input("Language name, alternate spelling, or AustLang code", placeholder="For example: Noongar or A1")
     region = right.selectbox("State or territory tag", regions)
@@ -57,16 +68,18 @@ if view == "Discover":
             "Alternate names": [item["alternate_names"] for item in page_records],
         })
         st.dataframe(display, width="stretch", hide_index=True, height=400)
-        selected_code = st.selectbox("Open a record on this page", [item["code"] for item in page_records], format_func=lambda code: next(f"{r['name']} ({code})" for r in page_records if r["code"] == code))
+        selected_code = st.selectbox("View details for", [item["code"] for item in page_records], format_func=lambda code: next(f"{r['name']} ({code})" for r in page_records if r["code"] == code))
         selected = next(item for item in page_records if item["code"] == selected_code)
-        st.subheader(selected["name"])
-        st.write(f"**AustLang code:** {selected['code']}")
-        st.write(f"**Region tags:** {', '.join(selected['regions']) or 'Not listed'}")
-        st.write(f"**Alternate names in source:** {selected['alternate_names'] or 'Not listed'}")
-        if selected["source_url"]:
-            st.link_button("View AIATSIS source record", selected["source_url"])
+        with st.container(border=True):
+            st.subheader(selected["name"])
+            detail_a, detail_b = st.columns(2)
+            detail_a.write(f"**AustLang code:** {selected['code']}")
+            detail_b.write(f"**Region tags:** {', '.join(selected['regions']) or 'Not listed'}")
+            st.write(f"**Alternate names in source:** {selected['alternate_names'] or 'Not listed'}")
+            if selected["source_url"]:
+                st.link_button("Open this record at AIATSIS", selected["source_url"])
 
-elif view == "Map":
+elif view == "Language Map":
     st.header("Approximate location map")
     st.markdown('<p class="section-lead">Explore published approximate points. Records without valid coordinates are omitted.</p>', unsafe_allow_html=True)
     mapped = [r for r in data if r["latitude"] is not None]
@@ -74,7 +87,38 @@ elif view == "Map":
     mapped = [r for r in mapped if map_region == "All" or map_region in r["regions"]]
     st.write(f"Showing {len(mapped):,} of {len(data):,} records with usable coordinates")
     if mapped:
-        st.map(pd.DataFrame({"lat": [r["latitude"] for r in mapped], "lon": [r["longitude"] for r in mapped]}), size=40)
+        map_data = pd.DataFrame({
+            "name": [r["name"] for r in mapped],
+            "code": [r["code"] for r in mapped],
+            "regions": [", ".join(r["regions"]) or "Not listed" for r in mapped],
+            "lat": [r["latitude"] for r in mapped],
+            "lon": [r["longitude"] for r in mapped],
+        })
+        layer = pdk.Layer(
+            "ScatterplotLayer",
+            map_data,
+            get_position="[lon, lat]",
+            get_fill_color=[163, 82, 50, 180],
+            get_radius=18000,
+            radius_min_pixels=4,
+            radius_max_pixels=12,
+            pickable=True,
+        )
+        view_state = pdk.ViewState(
+            latitude=float(map_data["lat"].mean()),
+            longitude=float(map_data["lon"].mean()),
+            zoom=3.2 if map_region == "All" else 4.2,
+        )
+        st.pydeck_chart(
+            pdk.Deck(
+                layers=[layer],
+                initial_view_state=view_state,
+                map_style="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+                tooltip={"html": "<b>{name}</b> ({code})<br/>Region tags: {regions}"},
+            ),
+            width="stretch",
+        )
+        st.caption("Point at a marker to see the language name, AustLang code, and region tags.")
     st.subheader("Find nearby published points")
     st.caption("Distance is calculated between approximate points. It does not establish a cultural or territorial relationship.")
     col1, col2 = st.columns(2)
@@ -88,7 +132,7 @@ elif view == "Map":
         "AIATSIS record": [r["source_url"] for r, _ in nearby],
     }), width="stretch", hide_index=True)
 
-elif view == "Insights":
+elif view == "Dataset Statistics":
     st.header("Patterns in the dataset")
     st.markdown('<p class="section-lead">See where the dataset has region tags, coordinates and alternate names.</p>', unsafe_allow_html=True)
     with_location = sum(r["latitude"] is not None for r in data)
@@ -105,7 +149,7 @@ elif view == "Insights":
     st.subheader("Completeness")
     st.dataframe(pd.DataFrame({"Field": ["Region tag", "Usable coordinates", "Alternate names"], "Records": [with_region, with_location, with_aliases], "Missing": [len(data)-with_region, len(data)-with_location, len(data)-with_aliases]}), hide_index=True, width="stretch")
 
-elif view == "Compare":
+elif view == "Compare Regions":
     st.header("Compare region tags")
     st.markdown('<p class="section-lead">Compare how many records carry two broad region tags, including records tagged to both.</p>', unsafe_allow_html=True)
     available = [region for region in regions if region != "All"]
@@ -125,6 +169,10 @@ elif view == "Compare":
 
 else:
     st.header("About the data")
+    st.info(
+        "This app explores published records about Australian Indigenous languages and approximate locations. "
+        "It does not provide translations or teach the languages."
+    )
     st.markdown(
         "This app uses a snapshot of **AIATSIS AustLang language metadata**, accessed through the "
         "Australian Government's spatial data service. The [data.gov.au dataset listing](" + SOURCE + ") "
