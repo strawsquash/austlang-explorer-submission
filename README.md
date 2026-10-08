@@ -16,13 +16,13 @@ After the first setup, VS Code also provides **Terminal → Run Task → Run Aus
 
 ## Test
 
-Run `python -m pytest -q` in the VS Code terminal. The tests cover the dataset threshold, search and ranking, region counts, geographic distance, invalid input, and boundary conditions. These are development checks, separate from the app's user-facing features.
+Run `python -m pytest -q` in the VS Code terminal. The tests cover the dataset threshold and required columns, search and ranking, region counts, geographic distance, invalid input, and boundary conditions. These are development checks, separate from the app's user-facing features.
 
 You can also choose **Terminal → Run Task → Run automated tests**.
 
 ## Data and attribution
 
-Source: Australian Institute of Aboriginal and Torres Strait Islander Studies (AIATSIS), [AustLang dataset](https://data.gov.au/data/dataset/austlang-dataset-001), listed as CC BY 4.0. The app bundles a 1,209-record snapshot obtained from the [Australian Government spatial data service](https://spatial.infrastructure.gov.au/server/rest/services/Hosted/Indigenous_Language_Austlang/FeatureServer/19). The CSV is adapted by selecting fields, trimming whitespace, and removing invalid coordinate values. The original AustLang record links are retained. The snapshot should be refreshed and compared with the current source before final submission.
+Source: Australian Institute of Aboriginal and Torres Strait Islander Studies (AIATSIS), [AustLang dataset](https://data.gov.au/data/dataset/austlang-dataset-001), listed as CC BY 4.0. The app bundles a 1,209-record snapshot obtained on 6 October 2026 from the [Australian Government spatial data service](https://spatial.infrastructure.gov.au/server/rest/services/Hosted/Indigenous_Language_Austlang/FeatureServer/19). The CSV is adapted by selecting fields, trimming whitespace, and removing invalid coordinate values. The original AustLang record links are retained. On 8 October 2026, all 1,209 codes and selected fields matched a fresh query to that service. The source can change after this check.
 
 Approximate points do not describe the boundaries of Country. Counts show records in this dataset, not living language or speaker counts. No AI-generated cultural, historical, or language content is used.
 
@@ -54,4 +54,4 @@ flowchart LR
 
 ## Deployment
 
-This first version is ready for [Streamlit Community Cloud](https://streamlit.io/cloud): connect a GitHub repository containing this folder, select `app.py`, and deploy. The app reads its bundled CSV and needs no API key or personal data. Record the deployed URL in the final report after confirming it works outside the local environment.
+The intended host is [Streamlit Community Cloud](https://streamlit.io/cloud): connect the GitHub repository containing this folder, select `app.py`, and deploy. The app reads its bundled CSV and needs no API key or personal data. The current GitHub repository is private and the external deployment has not yet been completed. Before submission, publish a suitable version, check the public URL from outside the development environment, and put that URL in the final report.

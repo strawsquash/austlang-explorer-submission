@@ -38,9 +38,9 @@ def apply_style() -> None:
     )
 
 
-def hero() -> None:
+def hero(record_count: int) -> None:
     st.markdown(
-        '<div class="hero"><div class="eyebrow">Published AIATSIS metadata · 1,209 records</div>'
+        f'<div class="hero"><div class="eyebrow">Published AIATSIS metadata · {record_count:,} records</div>'
         '<h1>AustLang Explorer</h1>'
         '<p>Find language records, examine how the dataset is organised, and follow each result back to its AIATSIS source.</p></div>',
         unsafe_allow_html=True,

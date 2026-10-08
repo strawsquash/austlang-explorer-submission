@@ -31,7 +31,7 @@ except (OSError, ValueError) as exc:
 counts = region_counts(data)
 regions = ["All", *sorted(counts)]
 
-hero()
+hero(len(data))
 view = st.segmented_control(
     "Explore",
     ["Search Languages", "Language Map", "Dataset Statistics", "Compare Regions", "About the Data"],

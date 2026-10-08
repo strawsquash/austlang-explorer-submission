@@ -4,10 +4,10 @@ These are evidence and decisions for a later report, **not** the final report. K
 
 ## Team and links
 
-- Student name(s): to add.
-- GitHub repository: to add.
+- Student: Dani Vaz, approved to work individually by the unit coordinator.
+- GitHub repository: https://github.com/strawsquash/austlang-explorer (currently private).
 - Public deployment URL: to add.
-- Contribution statement: to add based on actual work.
+- Contribution statement: Dani is the sole student; AI supplied much of the code and documentation, while Dani tested the running app and is responsible for the submission.
 
 ## Purpose and users
 
@@ -23,7 +23,7 @@ These are evidence and decisions for a later report, **not** the final report. K
 - 1,209 source features exported to `data/austlang.csv`; fields selected: code, name, alternate names, region tags, approximate latitude/longitude, AIATSIS record URL.
 - Snapshot checks: 1,209 unique valid records; 840 have usable coordinates, 1,007 have alternate names, and 984 have a region tag. The app calculates these from the file rather than hard-coding them.
 - Whitespace trimmed. Missing and out-of-range coordinates are left blank. No coordinates invented. Source links retained.
-- Check exact attribution and whether the spatial service's snapshot matches the current AIATSIS download before final submission.
+- On 2026-10-08, a fresh query to the same spatial layer matched all 1,209 codes and selected fields in the bundled snapshot. Recheck if the source changes before submission.
 - Cultural scope: only source-published metadata. No AI-generated cultural descriptions, translations, or historical assertions. No images, voices, or names of deceased people intentionally added.
 
 ## Architecture and algorithm
@@ -47,11 +47,11 @@ These are evidence and decisions for a later report, **not** the final report. K
 ## Interface and reliability
 
 - Sidebar navigation; labels and feedback for no search matches; source-record links; consistent theme.
-- Automated tests in `tests/test_explorer.py` (15 tests). On 2026-10-06, `python -m pytest -q` reported **15 passed**.
+- Automated tests in `tests/test_explorer.py` (17 tests). On 2026-10-08, `python -m pytest -q -p no:cacheprovider` reported **17 passed**.
 - Streamlit `AppTest` loaded all five views on 2026-10-06 with zero exceptions. The local app was also opened in a browser after restarting the development server and the updated search view rendered successfully.
 - On 2026-10-06, the interface was redesigned with a compact hero, top navigation, clearer sections, and mobile-width styling. A website test button was briefly added and verified, then removed because automated tests belong in the development workflow. The pytest suite remains in `tests/`.
 - On 2026-10-07, navigation labels were rewritten around user tasks, a short start guide and clearer record card were added, and map markers gained named hover details.
-- Manual workflow checks still needed: search by name/code, filter, source link, map, invalid/empty input, mobile width.
+- Manual workflow checks on 2026-10-08 covered code and alias search, WA filter, an empty result, map, region comparison and same-region warning, AIATSIS source link, and a 390-pixel viewport. External deployment remains unverified.
 
 ## Security and privacy
 

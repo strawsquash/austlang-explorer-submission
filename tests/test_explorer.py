@@ -94,3 +94,18 @@ def test_loader_rejects_incomplete_dataset(tmp_path):
         writer.writerow({"code": "X1", "name": "Example"})
     with pytest.raises(ValueError, match="at least 200"):
         load_records(path)
+
+
+def test_loader_rejects_missing_required_column(tmp_path):
+    path = tmp_path / "missing_url.csv"
+    path.write_text("code,name,latitude,longitude\nX1,Example,-31.9,115.8\n", encoding="utf-8")
+    with pytest.raises(ValueError, match="required columns"):
+        load_records(path)
+
+
+def test_search_ranks_exact_code_before_alias():
+    sample = [
+        {"code": "B2", "name": "Alpha", "alternate_names": "A1", "regions": ()},
+        {"code": "A1", "name": "Zeta", "alternate_names": "", "regions": ()},
+    ]
+    assert [r["code"] for r in search(sample, "A1")] == ["A1", "B2"]
