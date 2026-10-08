@@ -54,4 +54,4 @@ flowchart LR
 
 ## Deployment
 
-The app is deployed on [Streamlit Community Cloud](https://austlang-explorer-strawsquash.streamlit.app/) from the private GitHub repository's `master` branch, using `app.py` as the entry point. The app reads its bundled CSV and needs no API key or personal data. On 8 October 2026, its public URL loaded in a Chrome session without a Streamlit sign-in; an A1 search and the map view also worked.
+The app is deployed on [Streamlit Community Cloud](https://austlang-explorer-strawsquash.streamlit.app/) from the private development repository's `master` branch, using `app.py` as the entry point. This public repository contains the same current application source and data. The app reads its bundled CSV and needs no API key or personal data. On 8 October 2026, its public URL loaded in a Chrome session without a Streamlit sign-in; an A1 search and the map view also worked.
