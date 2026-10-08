@@ -54,4 +54,4 @@ flowchart LR
 
 ## Deployment
 
-The intended host is [Streamlit Community Cloud](https://streamlit.io/cloud): connect the GitHub repository containing this folder, select `app.py`, and deploy. The app reads its bundled CSV and needs no API key or personal data. The current GitHub repository is private and the external deployment has not yet been completed. Before submission, publish a suitable version, check the public URL from outside the development environment, and put that URL in the final report.
+The app is deployed on [Streamlit Community Cloud](https://austlang-explorer-strawsquash.streamlit.app/) from the private GitHub repository's `master` branch, using `app.py` as the entry point. The app reads its bundled CSV and needs no API key or personal data. On 8 October 2026, its public URL loaded in a Chrome session without a Streamlit sign-in; an A1 search and the map view also worked.

@@ -6,7 +6,7 @@ These are evidence and decisions for a later report, **not** the final report. K
 
 - Student: Dani Vaz, approved to work individually by the unit coordinator.
 - GitHub repository: https://github.com/strawsquash/austlang-explorer (currently private).
-- Public deployment URL: to add.
+- Public deployment URL: https://austlang-explorer-strawsquash.streamlit.app/ (checked in Chrome without a Streamlit sign-in on 2026-10-08).
 - Contribution statement: Dani is the sole student; AI supplied much of the code and documentation, while Dani tested the running app and is responsible for the submission.
 
 ## Purpose and users
@@ -51,7 +51,7 @@ These are evidence and decisions for a later report, **not** the final report. K
 - Streamlit `AppTest` loaded all five views on 2026-10-06 with zero exceptions. The local app was also opened in a browser after restarting the development server and the updated search view rendered successfully.
 - On 2026-10-06, the interface was redesigned with a compact hero, top navigation, clearer sections, and mobile-width styling. A website test button was briefly added and verified, then removed because automated tests belong in the development workflow. The pytest suite remains in `tests/`.
 - On 2026-10-07, navigation labels were rewritten around user tasks, a short start guide and clearer record card were added, and map markers gained named hover details.
-- Manual workflow checks on 2026-10-08 covered code and alias search, WA filter, an empty result, map, region comparison and same-region warning, AIATSIS source link, and a 390-pixel viewport. External deployment remains unverified.
+- Manual workflow checks on 2026-10-08 covered code and alias search, WA filter, an empty result, map, region comparison and same-region warning, AIATSIS source link, and a 390-pixel viewport. The public deployment later passed A1 search and map checks in Chrome without a Streamlit sign-in.
 
 ## Security and privacy
 
@@ -61,7 +61,7 @@ These are evidence and decisions for a later report, **not** the final report. K
 
 ## Deployment and limitations
 
-- Deployment target: Streamlit Community Cloud from GitHub. Must confirm external access and record URL.
+- Deployed on Streamlit Community Cloud from the private GitHub repository; the app itself is public. A1 search and the map view worked in Chrome without a Streamlit sign-in on 2026-10-08.
 - Source dataset is live; this bundled snapshot can become stale. Region tags and approximate locations cannot be treated as cultural boundaries. Missing coordinates and tags reduce map coverage.
 - Instructor/facilitator should review any uncertainty over appropriate cultural use.
 
